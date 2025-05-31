@@ -10,9 +10,9 @@ public class FSFile {
     public String getName() {
         return name;
     }
-
-    public void rename(String newName) {
-        this.name = newName;
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

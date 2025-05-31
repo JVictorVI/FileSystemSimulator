@@ -28,11 +28,15 @@ public class Directory {
         }
 
         public boolean hasSubDirectory(String name) {
-            return subDirectories.stream().anyMatch(d -> d.getName().equals(name));
+            return subDirectories.stream().anyMatch(directory -> directory.getName().equals(name));
         }
 
         public boolean hasFile(String name) {
-            return files.stream().anyMatch(f -> f.getName().equals(name));
+            return files.stream().anyMatch(file -> file.getName().equals(name));
         }
 
+        @Override
+        public String toString() {
+            return "Diretório: " + name;
+        }
     }

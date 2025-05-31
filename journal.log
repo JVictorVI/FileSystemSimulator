@@ -1,0 +1,37 @@
+2025-05-31 16:37:57 LIST_DIR root
+2025-05-31 16:40:10 CREATE_DIR root files
+2025-05-31 16:40:14 LIST_DIR root
+2025-05-31 16:40:37 CREATE_DIR root movies
+2025-05-31 16:40:39 LIST_DIR root
+2025-05-31 16:41:31 CREATE_FILE root/movies inception_4k_dublado.mkv
+2025-05-31 16:41:39 LIST_DIR root/movies
+2025-05-31 16:42:31 CREATE_FILE root/movies bora_bill_2.mkv
+2025-05-31 16:42:32 LIST_DIR root/movies
+2025-05-31 16:42:44 CREATE_DIR root songs
+2025-05-31 16:43:08 CREATE_FILE root/songs hino_corinthians.mp3
+2025-05-31 16:43:16 LIST_DIR root/songs
+2025-05-31 16:44:41 CREATE_FILE root/songs ringtone.m4a
+2025-05-31 16:44:50 DELETE_FILE root/songs ringtone.m4a
+2025-05-31 16:44:59 LIST_DIR root/songs
+2025-05-31 16:45:39 CREATE_DIR root games
+2025-05-31 16:45:52 CREATE_DIR root/games fps
+2025-05-31 16:46:14 CREATE_FILE root/games/fps cod_bo3
+2025-05-31 16:46:23 LIST_DIR root/games/fps
+2025-05-31 16:46:46 CREATE_FILE root/games/fps waxht_dogs_3
+2025-05-31 16:47:36 RENAME_FILE root/games/fps waxht_dogs_3 watch_dogs_3
+2025-05-31 16:48:30 DELETE_FILE root/games/fps watch_dogs_3
+2025-05-31 16:49:18 RENAME_FILE root/games/fps cod_bo3 call_of_duty_bo3
+2025-05-31 16:50:33 RENAME_DIR root/games fps shooter
+2025-05-31 16:51:54 CREATE_DIR root pictures
+2025-05-31 16:52:01 CREATE_DIR root/pictures family
+2025-05-31 16:52:22 CREATE_FILE root/pictures/family aniversario2025.jpg
+2025-05-31 16:52:35 LIST_DIR root/pictures/family
+2025-05-31 16:53:14 DELETE_DIR root pictures
+2025-05-31 16:55:36 CREATE_FILE root os_vingadores_43.mp4
+2025-05-31 16:55:42 LIST_DIR root
+2025-05-31 16:58:08 LIST_DIR root
+2025-05-31 16:58:28 RENAME_FILE root os_vingadores_43.mp4 vingadores2012.mp4
+2025-05-31 16:58:30 LIST_DIR root
+2025-05-31 16:58:37 LIST_DIR root/movies
+2025-05-31 16:59:04 COPY_FILE root vingadores2012.mp4 root/movies
+2025-05-31 16:59:07 LIST_DIR root/movies

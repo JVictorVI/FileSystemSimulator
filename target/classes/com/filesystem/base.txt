@@ -1,0 +1,11 @@
+[FILE] root/vingadores2012.mp4
+[DIR] root/files
+[DIR] root/movies
+[FILE] root/movies/inception_4k_dublado.mkv
+[FILE] root/movies/bora_bill_2.mkv
+[FILE] root/movies/vingadores2012.mp4
+[DIR] root/songs
+[FILE] root/songs/hino_corinthians.mp3
+[DIR] root/games
+[DIR] root/games/shooter
+[FILE] root/games/shooter/call_of_duty_bo3
