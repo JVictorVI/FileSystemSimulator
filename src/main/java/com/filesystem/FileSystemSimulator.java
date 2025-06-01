@@ -385,4 +385,8 @@ public class FileSystemSimulator {
             salvarBase();
         };
     }
+    public Directory getRoot() {
+        return root;
+    }
+    
 }
