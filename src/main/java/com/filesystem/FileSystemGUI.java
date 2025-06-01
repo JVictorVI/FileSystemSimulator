@@ -3,7 +3,6 @@ package com.filesystem;
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.IOException;
 
 public class FileSystemGUI extends JFrame {
@@ -141,7 +140,7 @@ public class FileSystemGUI extends JFrame {
         TreeItem item = (TreeItem) node.getUserObject();
 
         if (item.isDirectory()) {
-            JOptionPane.showMessageDialog(this, "Selecione um arquivo para copiar.");
+            JOptionPane.showMessageDialog(this, "Selecione um arquivo para copiar. ");
             return;
         }
 
