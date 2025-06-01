@@ -3,7 +3,6 @@ package com.filesystem;
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.IOException;
 
 public class FileSystemGUI extends JFrame {
@@ -17,11 +16,12 @@ public class FileSystemGUI extends JFrame {
 
         fs = new FileSystemSimulator();
 
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("root");
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new TreeItem("root", true));
         treeModel = new DefaultTreeModel(rootNode);
         tree = new JTree(treeModel);
         tree.setShowsRootHandles(true);
         tree.setRootVisible(true);
+        tree.setCellRenderer(new CustomTreeCellRenderer()); 
 
         JScrollPane treeScroll = new JScrollPane(tree);
 
@@ -61,8 +61,7 @@ public class FileSystemGUI extends JFrame {
         copiarArquivoBtn.addActionListener(e -> copiarArquivo());
         atualizarBtn.addActionListener(e -> atualizarArvore());
 
-        // Atualizar árvore depois que todos os componentes forem criados
-        atualizarArvore();
+        atualizarArvore(); 
     }
 
     private void criarDiretorio() {
@@ -95,16 +94,19 @@ public class FileSystemGUI extends JFrame {
         TreePath path = tree.getSelectionPath();
         if (path == null) return;
 
-        String oldName = path.getLastPathComponent().toString();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+        TreeItem item = (TreeItem) node.getUserObject();
+
+        String oldName = item.getName();
         String newName = JOptionPane.showInputDialog(this, "Novo nome:", oldName);
         if (newName != null && !newName.isEmpty()) {
             String parentPath = getCaminhoCompleto(path.getParentPath());
-            if (oldName.contains(".")) {
-                fs.renameFile(parentPath, oldName, newName);
-                log("Arquivo renomeado: " + oldName + " → " + newName);
-            } else {
+            if (item.isDirectory()) {
                 fs.renameDirectory(parentPath, oldName, newName);
                 log("Diretório renomeado: " + oldName + " → " + newName);
+            } else {
+                fs.renameFile(parentPath, oldName, newName);
+                log("Arquivo renomeado: " + oldName + " → " + newName);
             }
             atualizarArvore();
         }
@@ -114,35 +116,42 @@ public class FileSystemGUI extends JFrame {
         TreePath path = tree.getSelectionPath();
         if (path == null || path.getPathCount() == 1) return;
 
-        String nome = path.getLastPathComponent().toString();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+        TreeItem item = (TreeItem) node.getUserObject();
+
+        String nome = item.getName();
         String parentPath = getCaminhoCompleto(path.getParentPath());
 
-        if (nome.contains(".")) {
-            fs.deleteFile(parentPath, nome);
-            log("Arquivo deletado: " + parentPath + "/" + nome);
-        } else {
+        if (item.isDirectory()) {
             fs.deleteDirectory(parentPath, nome);
             log("Diretório deletado: " + parentPath + "/" + nome);
+        } else {
+            fs.deleteFile(parentPath, nome);
+            log("Arquivo deletado: " + parentPath + "/" + nome);
         }
         atualizarArvore();
     }
 
     private void copiarArquivo() {
         TreePath path = tree.getSelectionPath();
-        if (path == null || path.getPathCount() < 2) return;
+        if (path == null) return;
 
-        String nome = path.getLastPathComponent().toString();
-        if (!nome.contains(".")) {
-            JOptionPane.showMessageDialog(this, "Selecione um arquivo para copiar.");
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+        TreeItem item = (TreeItem) node.getUserObject();
+
+        if (item.isDirectory()) {
+            JOptionPane.showMessageDialog(this, "Selecione um arquivo para copiar. ");
             return;
         }
 
+        String fileName = item.getName();
         String origem = getCaminhoCompleto(path.getParentPath());
+
         String destino = JOptionPane.showInputDialog(this, "Caminho do diretório destino (Ex: root/movies):");
 
         if (destino != null && !destino.isEmpty()) {
             try {
-                fs.copyFile(origem, nome, destino);
+                fs.copyFile(origem, fileName, destino);
                 atualizarArvore();
                 log("Arquivo copiado de " + origem + " para " + destino);
             } catch (IOException e) {
@@ -152,7 +161,7 @@ public class FileSystemGUI extends JFrame {
     }
 
     private void atualizarArvore() {
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("root");
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new TreeItem("root", true));
         treeModel.setRoot(rootNode);
         carregarDiretorios(fs.getRoot(), "root", rootNode);
         treeModel.reload();
@@ -160,27 +169,49 @@ public class FileSystemGUI extends JFrame {
 
     private void carregarDiretorios(Directory dir, String path, DefaultMutableTreeNode node) {
         for (Directory sub : dir.getSubDirectories()) {
-            DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(sub.getName());
+            DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(new TreeItem(sub.getName(), true));
             node.add(subNode);
             carregarDiretorios(sub, path + "/" + sub.getName(), subNode);
         }
         for (FSFile file : dir.getFiles()) {
-            node.add(new DefaultMutableTreeNode(file.getName()));
+            node.add(new DefaultMutableTreeNode(new TreeItem(file.getName(), false)));
         }
     }
 
     private String getCaminhoCompleto(TreePath path) {
         Object[] nodes = path.getPath();
         StringBuilder fullPath = new StringBuilder();
-        for (Object node : nodes) {
+        for (Object obj : nodes) {
+            TreeItem item = (TreeItem) ((DefaultMutableTreeNode) obj).getUserObject();
             if (!fullPath.isEmpty()) fullPath.append("/");
-            fullPath.append(node.toString());
+            fullPath.append(item.getName());
         }
         return fullPath.toString();
     }
 
     private void log(String msg) {
         logArea.append(msg + "\n");
+    }
+
+    private static class CustomTreeCellRenderer extends DefaultTreeCellRenderer {
+        private final Icon folderIcon = UIManager.getIcon("FileView.directoryIcon");
+        private final Icon fileIcon = UIManager.getIcon("FileView.fileIcon");
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value,
+                boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+
+            super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            Object userObject = node.getUserObject();
+
+            if (userObject instanceof TreeItem item) {
+                setIcon(item.isDirectory() ? folderIcon : fileIcon);
+            }
+
+            return this;
+        }
     }
 
     public static void main(String[] args) {
